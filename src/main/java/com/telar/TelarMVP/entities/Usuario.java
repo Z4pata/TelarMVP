@@ -1,4 +1,8 @@
 package com.telar.TelarMVP.entities;
 
-public class Usuario {
+public record Usuario(
+        Integer id,
+        String nombre,
+        String email
+) {
 }
