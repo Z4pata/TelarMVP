@@ -1,3 +1,8 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
 spring:
   application:
     name: TelarMVP
@@ -9,3 +14,4 @@ spring:
     hikari:
       maximum-pool-size: 5
       minimum-idle: 1
+
