@@ -15,3 +15,8 @@ spring:
       maximum-pool-size: 5
       minimum-idle: 1
 
+springdoc:
+  swagger-ui:
+    path: /swagger
+  api-docs:
+    path: /openapi
