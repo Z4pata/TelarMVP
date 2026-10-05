@@ -1,6 +1,7 @@
 package com.telar.TelarMVP.repositories;
 
 import com.telar.TelarMVP.entities.Usuario;
+import com.telar.TelarMVP.interfaces.repository.UsuarioRepositoryInterface;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UsuarioRepository {
+public class UsuarioRepository implements UsuarioRepositoryInterface {
 
     private static final String COLUMNAS = "id, nombre, email";
 
