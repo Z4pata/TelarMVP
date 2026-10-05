@@ -2,7 +2,8 @@ package com.telar.TelarMVP.services;
 
 import com.telar.TelarMVP.entities.Usuario;
 import com.telar.TelarMVP.exceptions.UsuarioNoEncontradoException;
-import com.telar.TelarMVP.repositories.UsuarioRepository;
+import com.telar.TelarMVP.interfaces.repository.UsuarioRepositoryInterface;
+import com.telar.TelarMVP.interfaces.service.UsuarioServiceInterface;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class UsuarioService {
+public class UsuarioService implements UsuarioServiceInterface {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UsuarioRepositoryInterface usuarioRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepositoryInterface usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
     }
 
