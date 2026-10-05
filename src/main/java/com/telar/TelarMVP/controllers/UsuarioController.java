@@ -4,7 +4,7 @@ import com.telar.TelarMVP.dto.ActualizarUsuarioRequest;
 import com.telar.TelarMVP.dto.CrearUsuarioRequest;
 import com.telar.TelarMVP.entities.Usuario;
 import com.telar.TelarMVP.interfaces.Api.UsuarioApiInterface;
-import com.telar.TelarMVP.services.UsuarioService;
+import com.telar.TelarMVP.interfaces.service.UsuarioServiceInterface;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +23,9 @@ description= "Endpoints para el manejo de los usuarios")
 @RequestMapping("/usuarios")
 public class UsuarioController implements UsuarioApiInterface {
 
-    private final UsuarioService usuarioService;
+    private final UsuarioServiceInterface usuarioService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioServiceInterface usuarioService) {
         this.usuarioService = usuarioService;
     }
 
