@@ -2,6 +2,7 @@ package com.telar.TelarMVP.services;
 
 import com.telar.TelarMVP.dto.LoginRequest;
 import com.telar.TelarMVP.dto.UsuarioCredenciales;
+import com.telar.TelarMVP.exceptions.IncorrectPasswordException;
 import com.telar.TelarMVP.interfaces.service.AuthServiceInterface;
 import com.telar.TelarMVP.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class AuthService implements AuthServiceInterface {
         UsuarioCredenciales usuario = usuarioRepository.buscarPorEmail(request.getEmail());
 
         if (!passwordEncoder.matches(request.getPassword(), usuario.getPasswordHash())){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña incorrecta");
+            throw new IncorrectPasswordException("Contrasenia incorrecta.");
         }
 
         return usuario;
