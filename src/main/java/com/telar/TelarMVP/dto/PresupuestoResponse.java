@@ -1,11 +1,11 @@
 package com.telar.TelarMVP.dto;
 
-import com.telar.TelarMVP.entities.Usuario;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor

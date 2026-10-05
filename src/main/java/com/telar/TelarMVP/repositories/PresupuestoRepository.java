@@ -2,22 +2,18 @@ package com.telar.TelarMVP.repositories;
 
 import com.telar.TelarMVP.dto.PresupuestoResponse;
 import com.telar.TelarMVP.entities.Presupuesto;
-import com.telar.TelarMVP.entities.Usuario;
 import com.telar.TelarMVP.exceptions.PresupuestoNoEncontradoException;
 import com.telar.TelarMVP.interfaces.repository.PresupuestoRepositoryInterface;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Repository
 public class PresupuestoRepository implements PresupuestoRepositoryInterface {
