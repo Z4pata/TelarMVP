@@ -8,9 +8,7 @@ La primera funcionalidad implementada administra usuarios mediante una arquitect
 
 - JDK 17 o superior.
 - MySQL 8.
-- La base `finanzas_personales` y la tabla `usuario` creadas.
-
-La tabla esperada tiene las columnas `id`, `nombre`, `email` y `password_hash`.
+- La base de datos creada con `DATABASE.sql`
 
 ## Configuracion
 
@@ -38,7 +36,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 ./gradlew bootRun
 ```
 
-La API queda disponible en `http://localhost:8080/api/usuarios`.
+La API queda disponible en `http://localhost:8080/api/`.
 
 ## Endpoints
 
@@ -49,6 +47,11 @@ La API queda disponible en `http://localhost:8080/api/usuarios`.
 | `POST` | `/api/usuarios` | Crea un usuario y responde `201` |
 | `PUT` | `/api/usuarios/{id}` | Actualiza nombre y email |
 | `DELETE` | `/api/usuarios/{id}` | Elimina el usuario y responde `204` |
+
+| `GET` | `/api/presupuestos/actual/{userId}` | Consulta presupuesto en intervalo actual de un usuario |
+| `POST` | `/api/presupuestos` | Crea presupuesto con hoy como fecha de inicio |
+
+| `POST` | `/api/auth/login` | Inicio de sesion |
 
 Crear un usuario:
 
@@ -91,6 +94,7 @@ HTTP
   -> MySQL
 ```
 
+- `config`: genera configuraciones globales para la app.
 - `controllers`: protocolo HTTP y codigos de respuesta.
 - `services`: reglas de negocio y transacciones.
 - `repositories`: consultas SQL y mapeo de resultados.
@@ -101,5 +105,3 @@ HTTP
 ## Flujo de ramas recomendado
 
 El trabajo nuevo debe salir de `develop` en ramas `feature/*`. Cada integrante debe hacer commits propios y abrir un pull request hacia `develop`. Cuando la entrega sea estable, `develop` se integra en `main`.
-
-No se deben fabricar commits a nombre de otros integrantes: la evaluacion del trabajo en equipo debe corresponder a contribuciones reales.
