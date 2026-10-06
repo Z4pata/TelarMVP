@@ -18,8 +18,6 @@ public class SwaggerConfig {
                 .title("Telar MVP")
                 .version("1.0.0")
                 .description("API para gestion de finanzas personales")
-                ).addSecurityItem(
-                        new SecurityRequirement().addList("bearerAuth")
                 ).components(
                         new Components().addSecuritySchemes("bearerAuth",
                                 new SecurityScheme().name("bearerAuth")

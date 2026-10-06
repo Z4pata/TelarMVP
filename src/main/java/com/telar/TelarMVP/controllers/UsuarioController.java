@@ -5,6 +5,7 @@ import com.telar.TelarMVP.dto.CrearUsuarioRequest;
 import com.telar.TelarMVP.entities.Usuario;
 import com.telar.TelarMVP.interfaces.Api.UsuarioApiInterface;
 import com.telar.TelarMVP.interfaces.service.UsuarioServiceInterface;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -29,11 +30,12 @@ public class UsuarioController implements UsuarioApiInterface {
         this.usuarioService = usuarioService;
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     public List<Usuario> listar() {
         return usuarioService.listar();
     }
 
-
+    @SecurityRequirement(name = "bearerAuth")
     public Usuario buscarPorId(@PathVariable Integer id) {
         return usuarioService.buscarPorId(id);
     }
@@ -44,6 +46,7 @@ public class UsuarioController implements UsuarioApiInterface {
         return ResponseEntity.created(URI.create("/api/usuarios/" + usuario.id())).body(usuario);
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     public Usuario actualizar(
             @PathVariable Integer id,
             @Valid @RequestBody ActualizarUsuarioRequest request
@@ -51,6 +54,7 @@ public class UsuarioController implements UsuarioApiInterface {
         return usuarioService.actualizar(id, request.nombre(), request.email());
     }
 
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         usuarioService.eliminar(id);
         return ResponseEntity.noContent().build();
