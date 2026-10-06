@@ -1,5 +1,6 @@
 package com.telar.TelarMVP.repositories;
 
+import com.telar.TelarMVP.dto.UsuarioCredenciales;
 import com.telar.TelarMVP.entities.Usuario;
 import com.telar.TelarMVP.interfaces.repository.UsuarioRepositoryInterface;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -31,6 +32,11 @@ public class UsuarioRepository implements UsuarioRepositoryInterface {
     public Optional<Usuario> buscarPorId(Integer id) {
         String sql = "SELECT " + COLUMNAS + " FROM usuario WHERE id = ?";
         return jdbcTemplate.query(sql, this::mapearUsuario, id).stream().findFirst();
+    }
+
+    public UsuarioCredenciales buscarPorEmail(String email){
+        String sql = "SELECT id, password_hash FROM usuario WHERE email = ?";
+        return jdbcTemplate.queryForObject(sql, this::mapearUsuarioCredenciales, email);
     }
 
     public Usuario crear(String nombre, String email, String passwordHash) {
@@ -68,6 +74,12 @@ public class UsuarioRepository implements UsuarioRepositoryInterface {
                 resultSet.getInt("id"),
                 resultSet.getString("nombre"),
                 resultSet.getString("email")
+        );
+    }
+    private UsuarioCredenciales mapearUsuarioCredenciales(java.sql.ResultSet resultSet, int rowNumber) throws java.sql.SQLException {
+        return new UsuarioCredenciales(
+                resultSet.getInt("id"),
+                resultSet.getString("password_hash")
         );
     }
 }

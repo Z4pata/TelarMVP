@@ -1,6 +1,7 @@
 package com.telar.TelarMVP.exceptions;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,30 @@ public class ApiExceptionHandler {
     public ResponseEntity<ApiError> manejarNoEncontrado(UsuarioNoEncontradoException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ApiError(Instant.now(), 404, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ApiError> manejarNoEncontrado(EmptyResultDataAccessException ex) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiError(
+                        Instant.now(),
+                        404,
+                        "No se encontro el registro.",
+                        Map.of()
+                ));
+    }
+
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<ApiError> manejarContraseniaIncorrecta(IncorrectPasswordException ex) {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiError(
+                        Instant.now(),
+                        401,
+                        "Contrasenia incorrecta.",
+                        Map.of()
+                ));
     }
 
     @ExceptionHandler(ConflictoExcepcion.class)
