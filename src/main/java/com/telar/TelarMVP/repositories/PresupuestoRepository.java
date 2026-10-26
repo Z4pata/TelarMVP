@@ -46,7 +46,7 @@ public class PresupuestoRepository implements PresupuestoRepositoryInterface {
     }
 
     public PresupuestoResponse buscarActualPorUsuario(Integer userId){
-        String sql = "SELECT * FROM presupuesto WHERE usuario_id = ? AND fecha_inicio <= ? AND fecha_fin >= ?";
+        String sql = "SELECT " + COLUMNAS + " FROM presupuesto WHERE usuario_id = ? AND fecha_inicio <= ? AND fecha_fin >= ?";
         LocalDateTime hoy = LocalDateTime.now();
 
         try {
