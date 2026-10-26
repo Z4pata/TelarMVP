@@ -87,7 +87,7 @@ public class ApiExceptionHandler {
                 .body(new ApiError(
                         Instant.now(),
                         409,
-                        "El email ya esta registrado o la operacion viola una restriccion de la base de datos",
+                        "La operacion viola una restriccion de la base de datos",
                         Map.of()
                 ));
     }
