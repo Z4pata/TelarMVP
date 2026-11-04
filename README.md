@@ -47,6 +47,7 @@ La API queda disponible en `http://localhost:8080/api/`.
 | `POST` | `/api/usuarios` | Crea un usuario y responde `201` |
 | `PUT` | `/api/usuarios/{id}` | Actualiza nombre y email |
 | `DELETE` | `/api/usuarios/{id}` | Elimina el usuario y responde `204` |
+| `GET` | `/api/movimientos/usuario/{usuarioId}/total/{tipoMovimientoId}` | Consulta el total del tipo indicado dentro del periodo del presupuesto actual |
 |         |                       |                                      |
 | `GET` | `/api/presupuestos/actual/{userId}` | Consulta presupuesto en intervalo actual de un usuario |
 | `POST` | `/api/presupuestos` | Crea presupuesto con hoy como fecha de inicio |

@@ -6,7 +6,7 @@ import com.telar.TelarMVP.entities.Cuenta;
 import com.telar.TelarMVP.entities.MovimientoFinanciero;
 import com.telar.TelarMVP.entities.TipoMovimiento;
 import com.telar.TelarMVP.interfaces.Api.MovimientoFinancieroApiInterface;
-import com.telar.TelarMVP.interfaces.service.MovimientoFinancieroInterface;
+import com.telar.TelarMVP.interfaces.service.MovimientoFinancieroServiceInterface;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Tag(name = "Movimiento financiero", description = "Endpoints para crear movimientos financieros")
@@ -24,9 +25,9 @@ import java.util.List;
 @RequestMapping("/movimientos")
 public class MovimientoFinancieroController implements MovimientoFinancieroApiInterface {
 
-    private final MovimientoFinancieroInterface movimientoService;
+    private final MovimientoFinancieroServiceInterface movimientoService;
 
-    public MovimientoFinancieroController(MovimientoFinancieroInterface movimientoService) {
+    public MovimientoFinancieroController(MovimientoFinancieroServiceInterface movimientoService) {
         this.movimientoService = movimientoService;
     }
 
@@ -42,6 +43,16 @@ public class MovimientoFinancieroController implements MovimientoFinancieroApiIn
     @Override
     public ResponseEntity<List<MovimientoFinanciero>> listarPorCuentaId(Integer cuentaId) {
         return ResponseEntity.ok(movimientoService.listarPorCuentaId(cuentaId));
+    }
+
+    @Override
+    public ResponseEntity<BigDecimal> totalActualPorUsuarioYTipoMovimiento(
+            Integer usuarioId,
+            Integer tipoMovimientoId
+    ) {
+        return ResponseEntity.ok(
+                movimientoService.totalActualPorUsuarioYTipoMovimiento(usuarioId, tipoMovimientoId)
+        );
     }
 
     private MovimientoFinanciero convertir(MovimientoFinancieroRequest request) {

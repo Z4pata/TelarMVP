@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface MovimientoFinancieroApiInterface {
@@ -53,5 +54,20 @@ public interface MovimientoFinancieroApiInterface {
     @GetMapping("/cuenta/{cuentaId}")
     ResponseEntity<List<MovimientoFinanciero>> listarPorCuentaId(
             @PathVariable("cuentaId") Integer cuentaId
+    );
+
+    @Operation(summary = "Consultar el total del periodo actual por usuario y tipo de movimiento")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Total acumulado durante el periodo del presupuesto actual"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "No existe el usuario, el tipo de movimiento o un presupuesto actual",
+                    content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
+            )
+    })
+    @GetMapping("/usuario/{usuarioId}/total/{tipoMovimientoId}")
+    ResponseEntity<BigDecimal> totalActualPorUsuarioYTipoMovimiento(
+            @PathVariable("usuarioId") Integer usuarioId,
+            @PathVariable("tipoMovimientoId") Integer tipoMovimientoId
     );
 }
