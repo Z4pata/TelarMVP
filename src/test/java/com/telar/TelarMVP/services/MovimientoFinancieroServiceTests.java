@@ -4,9 +4,13 @@ import com.telar.TelarMVP.entities.Categoria;
 import com.telar.TelarMVP.entities.Cuenta;
 import com.telar.TelarMVP.entities.MovimientoFinanciero;
 import com.telar.TelarMVP.entities.TipoMovimiento;
+import com.telar.TelarMVP.entities.Usuario;
+import com.telar.TelarMVP.dto.PresupuestoResponse;
 import com.telar.TelarMVP.exceptions.CuentaNoEncontradaException;
 import com.telar.TelarMVP.exceptions.TipoMovimientoNoSoportadoException;
 import com.telar.TelarMVP.interfaces.repository.PresupuestoRepositoryInterface;
+import com.telar.TelarMVP.interfaces.repository.UsuarioRepositoryInterface;
+import com.telar.TelarMVP.interfaces.service.PresupuestoServiceInterface;
 import com.telar.TelarMVP.repositories.MovimientoFinancieroRepository;
 import com.telar.TelarMVP.repositories.CategoriaRepository;
 import com.telar.TelarMVP.repositories.CuentaRepository;
@@ -48,6 +52,12 @@ class MovimientoFinancieroServiceTests {
     @Mock
     private PresupuestoRepositoryInterface presupuestoRepository;
 
+    @Mock
+    private UsuarioRepositoryInterface usuarioRepository;
+
+    @Mock
+    private PresupuestoServiceInterface presupuestoService;
+
     private MovimientoFinancieroService movimientoService;
 
     @BeforeEach
@@ -61,6 +71,8 @@ class MovimientoFinancieroServiceTests {
         ReflectionTestUtils.setField(movimientoService, "cuentaRepository", cuentaRepository);
         ReflectionTestUtils.setField(movimientoService, "categoriaRepository", categoriaRepository);
         ReflectionTestUtils.setField(movimientoService, "tipoMovimientoRepository", tipoMovimientoRepository);
+        ReflectionTestUtils.setField(movimientoService, "usuarioRepository", usuarioRepository);
+        ReflectionTestUtils.setField(movimientoService, "presupuestoService", presupuestoService);
     }
 
     @Test
@@ -125,6 +137,22 @@ class MovimientoFinancieroServiceTests {
 
         assertThrows(CuentaNoEncontradaException.class, () -> movimientoService.listarPorCuentaId(99));
         verify(movimientoRepository, never()).findAllByCuenta_Id(99);
+    }
+
+    @Test
+    void totalActualPorUsuarioYTipoMovimientoDevuelveSumaDelPeriodoDelPresupuesto() {
+        LocalDateTime inicio = LocalDateTime.of(2026, 11, 1, 0, 0);
+        LocalDateTime fin = LocalDateTime.of(2026, 11, 30, 23, 59);
+        BigDecimal total = new BigDecimal("125.50");
+        when(usuarioRepository.buscarPorId(10)).thenReturn(Optional.of(new Usuario(10, "Usuario", "u@example.com")));
+        when(tipoMovimientoRepository.findById(5))
+                .thenReturn(Optional.of(new TipoMovimiento(5, "Ingreso", null)));
+        when(presupuestoService.buscarActualPorUsuario(10))
+                .thenReturn(new PresupuestoResponse(1, 10, 1000, inicio, fin));
+        when(movimientoRepository.sumarPorUsuarioTipoYPeriodo(10, "Ingreso", inicio, fin)).thenReturn(total);
+
+        assertEquals(total, movimientoService.totalActualPorUsuarioYTipoMovimiento(10, 5));
+        verify(movimientoRepository).sumarPorUsuarioTipoYPeriodo(10, "Ingreso", inicio, fin);
     }
 
     private MovimientoFinanciero movimiento(
