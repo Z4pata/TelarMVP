@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,7 +37,8 @@ class UsuarioControllerTests {
                 new Usuario(1, "Laura", "laura@example.com")
         ));
 
-        mockMvc.perform(get("/api/usuarios"))
+        mockMvc.perform(get("/usuarios")
+                        .with(jwt()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(1))
                 .andExpect(jsonPath("$[0].nombre").value("Laura"));
@@ -47,7 +49,8 @@ class UsuarioControllerTests {
         when(usuarioService.crear("Laura", "laura@example.com", "ClaveSegura123"))
                 .thenReturn(new Usuario(1, "Laura", "laura@example.com"));
 
-        mockMvc.perform(post("/api/usuarios")
+        mockMvc.perform(post("/usuarios")
+                        .with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -67,7 +70,8 @@ class UsuarioControllerTests {
         when(usuarioService.actualizar(1, "Laura Gomez", "laura.gomez@example.com"))
                 .thenReturn(new Usuario(1, "Laura Gomez", "laura.gomez@example.com"));
 
-        mockMvc.perform(put("/api/usuarios/1")
+        mockMvc.perform(put("/usuarios/1")
+                        .with(jwt())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -83,7 +87,8 @@ class UsuarioControllerTests {
     void eliminaUsuarioConDelete() throws Exception {
         doNothing().when(usuarioService).eliminar(1);
 
-        mockMvc.perform(delete("/api/usuarios/1"))
+        mockMvc.perform(delete("/usuarios/1")
+                        .with(jwt()))
                 .andExpect(status().isNoContent());
     }
 }

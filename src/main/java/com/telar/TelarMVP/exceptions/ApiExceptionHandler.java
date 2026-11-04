@@ -1,6 +1,8 @@
 package com.telar.TelarMVP.exceptions;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +18,87 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(UsuarioNoEncontradoException.class)
     public ResponseEntity<ApiError> manejarNoEncontrado(UsuarioNoEncontradoException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiError(Instant.now(), 404, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(CuentaNoEncontradaException.class)
+    public ResponseEntity<ApiError> manejarCuentaNoEncontrada(CuentaNoEncontradaException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiError(Instant.now(), 404, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(TipoCuentaNoEncontradaException.class)
+    public ResponseEntity<ApiError> manejarTipoCuentaNoEncontrado(TipoCuentaNoEncontradaException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiError(Instant.now(), 404, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(CuentaInvalidaException.class)
+    public ResponseEntity<ApiError> manejarCuentaInvalida(CuentaInvalidaException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ApiError(Instant.now(), 400, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(MovimientoInvalidoException.class)
+    public ResponseEntity<ApiError> manejarMovimientoInvalido(MovimientoInvalidoException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ApiError(Instant.now(), 400, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(TipoMovimientoNoSoportadoException.class)
+    public ResponseEntity<ApiError> manejarTipoMovimientoNoSoportado(
+            TipoMovimientoNoSoportadoException exception
+    ) {
+        return ResponseEntity.badRequest()
+                .body(new ApiError(Instant.now(), 400, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    public ResponseEntity<ApiError> manejarNoEncontrado(EmptyResultDataAccessException ex) {
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiError(
+                        Instant.now(),
+                        404,
+                        "No se encontro el registro.",
+                        Map.of()
+                ));
+    }
+
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<ApiError> manejarContraseniaIncorrecta(IncorrectPasswordException ex) {
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiError(
+                        Instant.now(),
+                        401,
+                        "Contrasenia incorrecta.",
+                        Map.of()
+                ));
+    }
+
+    @ExceptionHandler(ConflictoExcepcion.class)
+    public ResponseEntity<ApiError> manejarConflicto(ConflictoExcepcion exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiError(Instant.now(), 409, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(IncorrectResultSizeDataAccessException.class)
+    public ResponseEntity<ApiError> manejarConflicto(
+            IncorrectResultSizeDataAccessException ex) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiError(
+                        Instant.now(),
+                        409,
+                        "Se encontraron múltiples registros cuando solo debía existir uno.",
+                        Map.of()
+                ));
+    }
+
+    @ExceptionHandler(PresupuestoNoEncontradoException.class)
+    public ResponseEntity<ApiError> manejarPresupuestoNoEncontrado(PresupuestoNoEncontradoException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ApiError(Instant.now(), 404, exception.getMessage(), Map.of()));
     }
@@ -36,7 +119,7 @@ public class ApiExceptionHandler {
                 .body(new ApiError(
                         Instant.now(),
                         409,
-                        "El email ya esta registrado o la operacion viola una restriccion de la base de datos",
+                        "La operacion viola una restriccion de la base de datos",
                         Map.of()
                 ));
     }
