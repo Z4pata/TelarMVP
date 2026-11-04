@@ -22,6 +22,38 @@ public class ApiExceptionHandler {
                 .body(new ApiError(Instant.now(), 404, exception.getMessage(), Map.of()));
     }
 
+    @ExceptionHandler(CuentaNoEncontradaException.class)
+    public ResponseEntity<ApiError> manejarCuentaNoEncontrada(CuentaNoEncontradaException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiError(Instant.now(), 404, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(TipoCuentaNoEncontradaException.class)
+    public ResponseEntity<ApiError> manejarTipoCuentaNoEncontrado(TipoCuentaNoEncontradaException exception) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ApiError(Instant.now(), 404, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(CuentaInvalidaException.class)
+    public ResponseEntity<ApiError> manejarCuentaInvalida(CuentaInvalidaException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ApiError(Instant.now(), 400, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(MovimientoInvalidoException.class)
+    public ResponseEntity<ApiError> manejarMovimientoInvalido(MovimientoInvalidoException exception) {
+        return ResponseEntity.badRequest()
+                .body(new ApiError(Instant.now(), 400, exception.getMessage(), Map.of()));
+    }
+
+    @ExceptionHandler(TipoMovimientoNoSoportadoException.class)
+    public ResponseEntity<ApiError> manejarTipoMovimientoNoSoportado(
+            TipoMovimientoNoSoportadoException exception
+    ) {
+        return ResponseEntity.badRequest()
+                .body(new ApiError(Instant.now(), 400, exception.getMessage(), Map.of()));
+    }
+
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ApiError> manejarNoEncontrado(EmptyResultDataAccessException ex) {
 
