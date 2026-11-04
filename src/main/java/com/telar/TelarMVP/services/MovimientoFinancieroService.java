@@ -1,11 +1,15 @@
 package com.telar.TelarMVP.services;
 
 import com.telar.TelarMVP.entities.MovimientoFinanciero;
+import com.telar.TelarMVP.dto.PresupuestoResponse;
+import com.telar.TelarMVP.entities.TipoMovimiento;
 import com.telar.TelarMVP.exceptions.CuentaNoEncontradaException;
 import com.telar.TelarMVP.exceptions.MovimientoInvalidoException;
-import com.telar.TelarMVP.exceptions.TipoMovimientoNoSoportadoException;
+import com.telar.TelarMVP.exceptions.UsuarioNoEncontradoException;
+import com.telar.TelarMVP.interfaces.repository.UsuarioRepositoryInterface;
 import com.telar.TelarMVP.repositories.MovimientoFinancieroRepository;
-import com.telar.TelarMVP.interfaces.service.MovimientoFinancieroInterface;
+import com.telar.TelarMVP.interfaces.service.MovimientoFinancieroServiceInterface;
+import com.telar.TelarMVP.interfaces.service.PresupuestoServiceInterface;
 import com.telar.TelarMVP.interfaces.service.ProcesadorMovimientoInterface;
 import com.telar.TelarMVP.repositories.CategoriaRepository;
 import com.telar.TelarMVP.repositories.CuentaRepository;
@@ -15,13 +19,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class MovimientoFinancieroService implements MovimientoFinancieroInterface {
+public class MovimientoFinancieroService implements MovimientoFinancieroServiceInterface {
 
     @Autowired
     private MovimientoFinancieroRepository movimientoRepository;
@@ -31,6 +36,10 @@ public class MovimientoFinancieroService implements MovimientoFinancieroInterfac
     private CategoriaRepository categoriaRepository;
     @Autowired
     private TipoMovimientoRepository tipoMovimientoRepository;
+    @Autowired
+    private UsuarioRepositoryInterface usuarioRepository;
+    @Autowired
+    private PresupuestoServiceInterface presupuestoService;
 
     private final Map<String, ProcesadorMovimientoInterface> procesadores;
 
@@ -73,6 +82,24 @@ public class MovimientoFinancieroService implements MovimientoFinancieroInterfac
             throw new CuentaNoEncontradaException(cuentaId);
         }
         return movimientoRepository.findAllByCuenta_Id(cuentaId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BigDecimal totalActualPorUsuarioYTipoMovimiento(Integer usuarioId, Integer tipoMovimientoId) {
+        if (usuarioRepository.buscarPorId(usuarioId).isEmpty()) {
+            throw new UsuarioNoEncontradoException(usuarioId);
+        }
+        TipoMovimiento tipo = tipoMovimientoRepository.findById(tipoMovimientoId)
+                .orElseThrow(() -> new EmptyResultDataAccessException(1));
+        PresupuestoResponse presupuestoActual = presupuestoService.buscarActualPorUsuario(usuarioId);
+
+        return movimientoRepository.sumarPorUsuarioTipoYPeriodo(
+                usuarioId,
+                tipo.getNombre(),
+                presupuestoActual.getFechaInicio(),
+                presupuestoActual.getFechaFin()
+        );
     }
 
     private void validarMovimiento(MovimientoFinanciero movimiento) {
