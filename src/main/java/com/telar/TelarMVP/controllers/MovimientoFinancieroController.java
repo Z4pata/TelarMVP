@@ -7,10 +7,14 @@ import com.telar.TelarMVP.entities.MovimientoFinanciero;
 import com.telar.TelarMVP.entities.TipoMovimiento;
 import com.telar.TelarMVP.interfaces.Api.MovimientoFinancieroApiInterface;
 import com.telar.TelarMVP.interfaces.service.MovimientoFinancieroServiceInterface;
+import com.telar.TelarMVP.interfaces.service.JwtServiceInterface;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,11 +29,11 @@ import java.util.List;
 @RequestMapping("/movimientos")
 public class MovimientoFinancieroController implements MovimientoFinancieroApiInterface {
 
-    private final MovimientoFinancieroServiceInterface movimientoService;
+    @Autowired
+    private MovimientoFinancieroServiceInterface movimientoService;
+    @Autowired
+    private JwtServiceInterface jwtService;
 
-    public MovimientoFinancieroController(MovimientoFinancieroServiceInterface movimientoService) {
-        this.movimientoService = movimientoService;
-    }
 
     @Override
     public ResponseEntity<MovimientoFinanciero> crear(
@@ -47,11 +51,14 @@ public class MovimientoFinancieroController implements MovimientoFinancieroApiIn
 
     @Override
     public ResponseEntity<BigDecimal> totalActualPorUsuarioYTipoMovimiento(
-            Integer usuarioId,
+            @AuthenticationPrincipal Jwt jwt,
             Integer tipoMovimientoId
     ) {
         return ResponseEntity.ok(
-                movimientoService.totalActualPorUsuarioYTipoMovimiento(usuarioId, tipoMovimientoId)
+                movimientoService.totalActualPorUsuarioYTipoMovimiento(
+                        jwtService.obtenerUsuarioId(jwt),
+                        tipoMovimientoId
+                )
         );
     }
 

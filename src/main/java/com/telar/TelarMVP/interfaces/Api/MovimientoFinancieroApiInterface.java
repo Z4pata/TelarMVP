@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,9 +67,9 @@ public interface MovimientoFinancieroApiInterface {
                     content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
             )
     })
-    @GetMapping("/usuario/{usuarioId}/total/{tipoMovimientoId}")
+    @GetMapping("/usuario/total/{tipoMovimientoId}")
     ResponseEntity<BigDecimal> totalActualPorUsuarioYTipoMovimiento(
-            @PathVariable("usuarioId") Integer usuarioId,
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable("tipoMovimientoId") Integer tipoMovimientoId
     );
 }

@@ -5,10 +5,14 @@ import com.telar.TelarMVP.entities.Cuenta;
 import com.telar.TelarMVP.entities.TipoCuenta;
 import com.telar.TelarMVP.interfaces.Api.CuentaApiInterface;
 import com.telar.TelarMVP.interfaces.service.CuentaServiceInterface;
+import com.telar.TelarMVP.interfaces.service.JwtServiceInterface;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +26,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/cuentas")
 public class CuentaController implements CuentaApiInterface {
+    @Autowired
+    private CuentaServiceInterface cuentaService;
+    @Autowired
+    private JwtServiceInterface jwtService;
 
-    private final CuentaServiceInterface cuentaService;
-
-    public CuentaController(CuentaServiceInterface cuentaService) {
-        this.cuentaService = cuentaService;
-    }
 
     @Override
     public ResponseEntity<Cuenta> crear(@Valid @RequestBody CuentaRequest request) {
@@ -42,8 +45,8 @@ public class CuentaController implements CuentaApiInterface {
     }
 
     @Override
-    public ResponseEntity<List<Cuenta>> listarPorUsuarioId(@PathVariable("usuarioId") Integer usuarioId) {
-        return ResponseEntity.ok(cuentaService.listarPorUsuarioId(usuarioId));
+    public ResponseEntity<List<Cuenta>> listarPorUsuarioId(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(cuentaService.listarPorUsuarioId(jwtService.obtenerUsuarioId(jwt)));
     }
 
     @Override

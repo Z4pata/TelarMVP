@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,7 +50,7 @@ public interface CuentaApiInterface {
     @GetMapping
     ResponseEntity<List<Cuenta>> listar();
 
-    @Operation(summary = "Listar las cuentas de un usuario")
+    @Operation(summary = "Listar las cuentas del usuario autenticado")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de cuentas del usuario"),
             @ApiResponse(
@@ -57,8 +59,8 @@ public interface CuentaApiInterface {
                     content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
             )
     })
-    @GetMapping("/usuario/{usuarioId}")
-    ResponseEntity<List<Cuenta>> listarPorUsuarioId(@PathVariable("usuarioId") Integer usuarioId);
+    @GetMapping("/usuario")
+    ResponseEntity<List<Cuenta>> listarPorUsuarioId(@AuthenticationPrincipal Jwt jwt);
 
     @Operation(summary = "Encontrar una cuenta por su ID")
     @ApiResponses({
