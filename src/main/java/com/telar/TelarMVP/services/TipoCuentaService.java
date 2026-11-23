@@ -44,4 +44,19 @@ public class TipoCuentaService implements TipoCuentaServiceInterface {
         TipoCuenta tipoCuenta = new TipoCuenta(null, request.getNombre(), request.getDescripcion());
         return repository.save(tipoCuenta);
     }
+
+    @Override
+    @Transactional
+    public TipoCuenta actualizar(Integer id, CrearTipoCuentaRequest request) {
+        TipoCuenta tipoCuenta = findById(id);
+        tipoCuenta.setNombre(request.getNombre());
+        tipoCuenta.setDescripcion(request.getDescripcion());
+        return repository.save(tipoCuenta);
+    }
+
+    @Override
+    @Transactional
+    public void eliminar(Integer id) {
+        repository.delete(findById(id));
+    }
 }

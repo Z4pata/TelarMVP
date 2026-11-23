@@ -10,9 +10,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -64,4 +66,41 @@ public interface TipoCuentaApiInterface {
     })
     @GetMapping("/{id}")
     ResponseEntity<TipoCuenta> findById(@PathVariable("id") Integer id);
+
+    @Operation(summary = "Actualizar un tipo de cuenta por su ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Tipo de cuenta actualizado"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Datos no válidos",
+                    content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "No existe el tipo de cuenta",
+                    content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
+            )
+    })
+    @PutMapping("/{id}")
+    ResponseEntity<TipoCuenta> actualizar(
+            @PathVariable("id") Integer id,
+            @Valid @RequestBody CrearTipoCuentaRequest request
+    );
+
+    @Operation(summary = "Eliminar un tipo de cuenta por su ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Tipo de cuenta eliminado"),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "No existe el tipo de cuenta",
+                    content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "El tipo de cuenta está en uso",
+                    content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
+            )
+    })
+    @DeleteMapping("/{id}")
+    ResponseEntity<Void> eliminar(@PathVariable("id") Integer id);
 }

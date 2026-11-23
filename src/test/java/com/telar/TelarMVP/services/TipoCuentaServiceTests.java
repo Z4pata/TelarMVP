@@ -127,4 +127,51 @@ class TipoCuentaServiceTests {
         assertThrows(DataIntegrityViolationException.class, () -> tipoCuentaService.insertar(request));
         verify(tipoCuentaRepository).save(any(TipoCuenta.class));
     }
+
+    @Test
+    void actualizarTipoCuenta() {
+        Integer id = 1;
+        TipoCuenta existente = new TipoCuenta(id, "Ahorros", "Cuenta de ahorros");
+        CrearTipoCuentaRequest request = new CrearTipoCuentaRequest();
+        request.setNombre("Corriente");
+        request.setDescripcion("Cuenta corriente");
+        when(tipoCuentaRepository.findById(id)).thenReturn(Optional.of(existente));
+        when(tipoCuentaRepository.save(existente)).thenReturn(existente);
+
+        TipoCuenta result = tipoCuentaService.actualizar(id, request);
+
+        assertEquals("Corriente", result.getNombre());
+        assertEquals("Cuenta corriente", result.getDescripcion());
+        verify(tipoCuentaRepository).save(existente);
+    }
+
+    @Test
+    void actualizarTipoCuenta_retornaNoEncontrado() {
+        Integer id = 99;
+        when(tipoCuentaRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EmptyResultDataAccessException.class,
+                () -> tipoCuentaService.actualizar(id, new CrearTipoCuentaRequest()));
+        verify(tipoCuentaRepository, never()).save(any(TipoCuenta.class));
+    }
+
+    @Test
+    void eliminarTipoCuenta() {
+        Integer id = 1;
+        TipoCuenta existente = new TipoCuenta(id, "Ahorros", "Cuenta de ahorros");
+        when(tipoCuentaRepository.findById(id)).thenReturn(Optional.of(existente));
+
+        tipoCuentaService.eliminar(id);
+
+        verify(tipoCuentaRepository).delete(existente);
+    }
+
+    @Test
+    void eliminarTipoCuenta_retornaNoEncontrado() {
+        Integer id = 99;
+        when(tipoCuentaRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EmptyResultDataAccessException.class, () -> tipoCuentaService.eliminar(id));
+        verify(tipoCuentaRepository, never()).delete(any(TipoCuenta.class));
+    }
 }

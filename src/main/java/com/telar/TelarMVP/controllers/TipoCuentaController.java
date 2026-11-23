@@ -47,5 +47,19 @@ public class TipoCuentaController implements TipoCuentaApiInterface {
         return ResponseEntity.ok().body(tipoCuentaService.findById(id));
     }
 
+    @Override
+    public ResponseEntity<TipoCuenta> actualizar(
+            @PathVariable("id") Integer id,
+            @Valid @RequestBody CrearTipoCuentaRequest request
+    ) {
+        return ResponseEntity.ok(tipoCuentaService.actualizar(id, request));
+    }
+
+    @Override
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) {
+        tipoCuentaService.eliminar(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

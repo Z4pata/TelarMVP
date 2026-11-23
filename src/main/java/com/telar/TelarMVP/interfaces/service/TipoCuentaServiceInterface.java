@@ -10,4 +10,6 @@ public interface TipoCuentaServiceInterface {
     TipoCuenta findByNombre(String nombre);
     TipoCuenta findById(Integer id);
     TipoCuenta insertar(CrearTipoCuentaRequest request);
+    TipoCuenta actualizar(Integer id, CrearTipoCuentaRequest request);
+    void eliminar(Integer id);
 }

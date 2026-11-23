@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 public class CrearTipoCuentaRequest {
     @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 200, message = "El nombre no puede superar 100 caracteres")
+    @Size(max = 50, message = "El nombre no puede superar los 50 caracteres")
     private String nombre;
 
+    @Size(max = 255, message = "La descripcion no puede superar los 255 caracteres")
     private String descripcion;
 }
