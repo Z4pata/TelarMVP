@@ -3,6 +3,7 @@ package com.telar.TelarMVP.services;
 import com.telar.TelarMVP.entities.Cuenta;
 import com.telar.TelarMVP.entities.TipoCuenta;
 import com.telar.TelarMVP.entities.Usuario;
+import com.telar.TelarMVP.exceptions.CuentaNoEncontradaException;
 import com.telar.TelarMVP.exceptions.TipoCuentaNoEncontradaException;
 import com.telar.TelarMVP.exceptions.UsuarioNoEncontradoException;
 import com.telar.TelarMVP.repositories.CuentaRepository;
@@ -94,5 +95,49 @@ class CuentaServiceTests {
 
         assertThrows(UsuarioNoEncontradoException.class, () -> cuentaService.listarPorUsuarioId(99));
         verify(cuentaRepository, never()).findAllByUsuarioId(99);
+    }
+
+    @Test
+    void findByIdDevuelveLaCuentaDelUsuario() {
+        Cuenta cuenta = new Cuenta(5, 7, new TipoCuenta(2, "Ahorros", null), "Banco", null);
+        when(cuentaRepository.findByIdAndUsuarioId(5, 7)).thenReturn(Optional.of(cuenta));
+
+        assertEquals(cuenta, cuentaService.findById(5, 7));
+    }
+
+    @Test
+    void findByIdFallaSiLaCuentaEsDeOtroUsuario() {
+        when(cuentaRepository.findByIdAndUsuarioId(5, 8)).thenReturn(Optional.empty());
+
+        assertThrows(CuentaNoEncontradaException.class, () -> cuentaService.findById(5, 8));
+    }
+
+    @Test
+    void actualizarFallaSiLaCuentaEsDeOtroUsuario() {
+        Cuenta cambios = new Cuenta(null, 8, new TipoCuenta(2, null, null), "Banco", null);
+        when(usuarioRepository.buscarPorId(8)).thenReturn(Optional.of(new Usuario(8, "Luis", "luis@example.com")));
+        when(tipoCuentaRepository.findById(2)).thenReturn(Optional.of(new TipoCuenta(2, "Ahorros", null)));
+        when(cuentaRepository.findByIdAndUsuarioId(5, 8)).thenReturn(Optional.empty());
+
+        assertThrows(CuentaNoEncontradaException.class, () -> cuentaService.actualizar(5, cambios));
+        verify(cuentaRepository, never()).save(any(Cuenta.class));
+    }
+
+    @Test
+    void eliminarBorraLaCuentaDelUsuario() {
+        Cuenta cuenta = new Cuenta(5, 7, new TipoCuenta(2, "Ahorros", null), "Banco", null);
+        when(cuentaRepository.findByIdAndUsuarioId(5, 7)).thenReturn(Optional.of(cuenta));
+
+        cuentaService.eliminar(5, 7);
+
+        verify(cuentaRepository).delete(cuenta);
+    }
+
+    @Test
+    void eliminarFallaSiLaCuentaEsDeOtroUsuario() {
+        when(cuentaRepository.findByIdAndUsuarioId(5, 8)).thenReturn(Optional.empty());
+
+        assertThrows(CuentaNoEncontradaException.class, () -> cuentaService.eliminar(5, 8));
+        verify(cuentaRepository, never()).delete(any(Cuenta.class));
     }
 }
