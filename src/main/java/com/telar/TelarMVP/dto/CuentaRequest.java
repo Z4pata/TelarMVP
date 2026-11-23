@@ -10,9 +10,6 @@ import lombok.Setter;
 @Setter
 public class CuentaRequest {
 
-    @NotNull(message = "El usuario es obligatorio")
-    private Integer usuarioId;
-
     @NotNull(message = "El tipo de cuenta es obligatorio")
     private Integer tipoCuentaId;
 

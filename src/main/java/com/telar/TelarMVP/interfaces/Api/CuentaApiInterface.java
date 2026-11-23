@@ -43,7 +43,7 @@ public interface CuentaApiInterface {
             )
     })
     @PostMapping
-    ResponseEntity<Cuenta> crear(@Valid @RequestBody CuentaRequest request);
+    ResponseEntity<Cuenta> crear(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody CuentaRequest request);
 
     @Operation(summary = "Listar todas las cuentas")
     @ApiResponse(responseCode = "200", description = "Lista de cuentas")
@@ -95,6 +95,7 @@ public interface CuentaApiInterface {
     })
     @PutMapping("/{id}")
     ResponseEntity<Cuenta> actualizar(
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable("id") Integer id,
             @Valid @RequestBody CuentaRequest request
     );

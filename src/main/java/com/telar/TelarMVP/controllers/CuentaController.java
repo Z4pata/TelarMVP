@@ -33,8 +33,11 @@ public class CuentaController implements CuentaApiInterface {
 
 
     @Override
-    public ResponseEntity<Cuenta> crear(@Valid @RequestBody CuentaRequest request) {
-        Cuenta cuenta = cuentaService.insertar(convertir(request));
+    public ResponseEntity<Cuenta> crear(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody CuentaRequest request
+    ) {
+        Cuenta cuenta = cuentaService.insertar(convertir(request, jwtService.obtenerUsuarioId(jwt)));
         return ResponseEntity.created(URI.create("/api/cuentas/" + cuenta.getId()))
                 .body(cuenta);
     }
@@ -56,10 +59,11 @@ public class CuentaController implements CuentaApiInterface {
 
     @Override
     public ResponseEntity<Cuenta> actualizar(
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable("id") Integer id,
             @Valid @RequestBody CuentaRequest request
     ) {
-        return ResponseEntity.ok(cuentaService.actualizar(id, convertir(request)));
+        return ResponseEntity.ok(cuentaService.actualizar(id, convertir(request, jwtService.obtenerUsuarioId(jwt))));
     }
 
     @Override
@@ -68,10 +72,10 @@ public class CuentaController implements CuentaApiInterface {
         return ResponseEntity.noContent().build();
     }
 
-    private Cuenta convertir(CuentaRequest request) {
+    private Cuenta convertir(CuentaRequest request, Integer usuarioId) {
         return new Cuenta(
                 null,
-                request.getUsuarioId(),
+                usuarioId,
                 new TipoCuenta(request.getTipoCuentaId(), null, null),
                 request.getEntidad(),
                 request.getDescripcion()
