@@ -2,6 +2,7 @@ package com.telar.TelarMVP.services;
 
 import com.telar.TelarMVP.dto.TipoMovimientoRequest;
 import com.telar.TelarMVP.entities.TipoMovimiento;
+import com.telar.TelarMVP.exceptions.ConflictoExcepcion;
 import com.telar.TelarMVP.interfaces.service.TipoMovimientoServiceInterface;
 import com.telar.TelarMVP.repositories.TipoMovimientoRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -9,9 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TipoMovimientoService implements TipoMovimientoServiceInterface {
+
+    // Los procesadores de movimientos dependen de estos nombres, por eso no se pueden tocar.
+    private static final Set<String> TIPOS_PROTEGIDOS = Set.of(
+            ProcesadorIngreso.CODIGO_TIPO,
+            ProcesadorEgreso.CODIGO_TIPO
+    );
+    private static final String MENSAJE_PROTEGIDO =
+            "Los tipos de movimiento Ingreso y Egreso no se pueden modificar ni eliminar";
 
     private final TipoMovimientoRepository repository;
 
@@ -54,6 +64,8 @@ public class TipoMovimientoService implements TipoMovimientoServiceInterface {
     @Transactional
     public TipoMovimiento actualizar(Integer id, TipoMovimientoRequest request) {
         TipoMovimiento tipoMovimiento = findById(id);
+        verificarNoProtegido(tipoMovimiento.getNombre());
+        verificarNoProtegido(request.getNombre());
         tipoMovimiento.setNombre(request.getNombre());
         tipoMovimiento.setDescripcion(request.getDescripcion());
         return repository.save(tipoMovimiento);
@@ -63,6 +75,15 @@ public class TipoMovimientoService implements TipoMovimientoServiceInterface {
     @Transactional
     public void eliminar(Integer id) {
         TipoMovimiento tipoMovimiento = findById(id);
+        verificarNoProtegido(tipoMovimiento.getNombre());
         repository.delete(tipoMovimiento);
+    }
+
+    private void verificarNoProtegido(String nombre) {
+        boolean protegido = nombre != null && TIPOS_PROTEGIDOS.stream()
+                .anyMatch(tipo -> tipo.equalsIgnoreCase(nombre.trim()));
+        if (protegido) {
+            throw new ConflictoExcepcion(MENSAJE_PROTEGIDO);
+        }
     }
 }

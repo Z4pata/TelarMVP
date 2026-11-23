@@ -1,6 +1,8 @@
 package com.telar.TelarMVP.services;
 
+import com.telar.TelarMVP.dto.TipoMovimientoRequest;
 import com.telar.TelarMVP.entities.TipoMovimiento;
+import com.telar.TelarMVP.exceptions.ConflictoExcepcion;
 import com.telar.TelarMVP.repositories.TipoMovimientoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,5 +97,62 @@ public class TipoMovimientoServiceTests {
 
         assertThrows(EmptyResultDataAccessException.class, () -> tipoMovimientoService.findById(id));
         verify(tipoMovimientoRepository, times(1)).findById(id);
+    }
+
+    private TipoMovimientoRequest request(String nombre) {
+        TipoMovimientoRequest request = new TipoMovimientoRequest();
+        request.setNombre(nombre);
+        return request;
+    }
+
+    @Test
+    void actualizarTipoMovimiento() {
+        TipoMovimiento tipo = new TipoMovimiento(3, "Ahorro", null);
+        when(tipoMovimientoRepository.findById(3)).thenReturn(Optional.of(tipo));
+        when(tipoMovimientoRepository.save(tipo)).thenReturn(tipo);
+
+        TipoMovimiento result = tipoMovimientoService.actualizar(3, request("Inversion"));
+
+        assertEquals("Inversion", result.getNombre());
+        verify(tipoMovimientoRepository).save(tipo);
+    }
+
+    @Test
+    void actualizarTipoMovimiento_rechazaTipoProtegido() {
+        when(tipoMovimientoRepository.findById(1))
+                .thenReturn(Optional.of(new TipoMovimiento(1, "Ingreso", null)));
+
+        assertThrows(ConflictoExcepcion.class,
+                () -> tipoMovimientoService.actualizar(1, request("Salario")));
+        verify(tipoMovimientoRepository, never()).save(any(TipoMovimiento.class));
+    }
+
+    @Test
+    void actualizarTipoMovimiento_rechazaRenombrarComoProtegido() {
+        when(tipoMovimientoRepository.findById(3))
+                .thenReturn(Optional.of(new TipoMovimiento(3, "Ahorro", null)));
+
+        assertThrows(ConflictoExcepcion.class,
+                () -> tipoMovimientoService.actualizar(3, request("egreso")));
+        verify(tipoMovimientoRepository, never()).save(any(TipoMovimiento.class));
+    }
+
+    @Test
+    void eliminarTipoMovimiento_rechazaTipoProtegido() {
+        when(tipoMovimientoRepository.findById(2))
+                .thenReturn(Optional.of(new TipoMovimiento(2, "Egreso", null)));
+
+        assertThrows(ConflictoExcepcion.class, () -> tipoMovimientoService.eliminar(2));
+        verify(tipoMovimientoRepository, never()).delete(any(TipoMovimiento.class));
+    }
+
+    @Test
+    void eliminarTipoMovimiento() {
+        TipoMovimiento tipo = new TipoMovimiento(3, "Ahorro", null);
+        when(tipoMovimientoRepository.findById(3)).thenReturn(Optional.of(tipo));
+
+        tipoMovimientoService.eliminar(3);
+
+        verify(tipoMovimientoRepository).delete(tipo);
     }
 }
