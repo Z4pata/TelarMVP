@@ -26,13 +26,13 @@ public class PresupuestoService implements PresupuestoServiceInterface {
     }
 
     @Transactional
-    public Presupuesto crear(CrearPresupuestoRequest request){
-        Optional<Usuario> usuario = usuarioRepository.buscarPorId(request.getUsuarioId());
+    public Presupuesto crear(Integer usuarioId, CrearPresupuestoRequest request){
+        Optional<Usuario> usuario = usuarioRepository.buscarPorId(usuarioId);
 
         if(usuario.isEmpty()){
-            throw new UsuarioNoEncontradoException(request.getUsuarioId());
+            throw new UsuarioNoEncontradoException(usuarioId);
         }
-        if(presupuestoRepository.existeActivo(request.getUsuarioId())){
+        if(presupuestoRepository.existeActivo(usuarioId)){
             throw new ConflictoExcepcion("El usuario ya tiene un presupuesto activo en ese intervalo de tiempo");
         }
 

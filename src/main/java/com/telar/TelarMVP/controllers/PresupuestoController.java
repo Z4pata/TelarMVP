@@ -31,8 +31,11 @@ public class PresupuestoController {
 
 
     @PostMapping
-    public Presupuesto crear(@Valid @RequestBody CrearPresupuestoRequest request){
-        return presupuestoService.crear(request);
+    public Presupuesto crear(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody CrearPresupuestoRequest request
+    ) {
+        return presupuestoService.crear(jwtService.obtenerUsuarioId(jwt), request);
     }
 
     @GetMapping("/actual")

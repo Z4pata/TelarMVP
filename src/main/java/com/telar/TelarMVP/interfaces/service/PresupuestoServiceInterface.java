@@ -5,6 +5,6 @@ import com.telar.TelarMVP.dto.PresupuestoResponse;
 import com.telar.TelarMVP.entities.Presupuesto;
 
 public interface PresupuestoServiceInterface {
-    Presupuesto crear(CrearPresupuestoRequest request);
+    Presupuesto crear(Integer usuarioId, CrearPresupuestoRequest request);
     PresupuestoResponse buscarActualPorUsuario(Integer usuarioId);
 }

@@ -17,7 +17,4 @@ public class CrearPresupuestoRequest {
     @Future(message = "La fecha de fin debe ser en el futuro")
     @NotNull(message = "La fecha de fin es obligatoria")
     private LocalDateTime fechaFin;
-
-    @NotNull(message = "El id del usuario es obligatorio")
-    private Integer usuarioId;
 }

@@ -40,7 +40,6 @@ class PresupuestoServiceTests {
         Usuario usuario = new Usuario(usuarioId, "Laura", "laura@example.com");
         LocalDateTime fechaFin = LocalDateTime.now().plusDays(30);
         CrearPresupuestoRequest request = new CrearPresupuestoRequest();
-        request.setUsuarioId(usuarioId);
         request.setMontoLimite(1500.0);
         request.setFechaFin(fechaFin);
         when(usuarioRepository.buscarPorId(usuarioId)).thenReturn(Optional.of(usuario));
@@ -49,7 +48,7 @@ class PresupuestoServiceTests {
                 .thenAnswer(invocation -> invocation.getArgument(0));
         LocalDateTime inicioPrueba = LocalDateTime.now();
 
-        Presupuesto result = presupuestoService.crear(request);
+        Presupuesto result = presupuestoService.crear(usuarioId, request);
 
         LocalDateTime finPrueba = LocalDateTime.now();
         ArgumentCaptor<Presupuesto> captor = ArgumentCaptor.forClass(Presupuesto.class);
@@ -68,12 +67,11 @@ class PresupuestoServiceTests {
     void crearPresupuesto_retornaErrorCuandoUsuarioNoExiste() {
         Integer usuarioId = 99;
         CrearPresupuestoRequest request = new CrearPresupuestoRequest();
-        request.setUsuarioId(usuarioId);
         request.setMontoLimite(1500.0);
         request.setFechaFin(LocalDateTime.now().plusDays(30));
         when(usuarioRepository.buscarPorId(usuarioId)).thenReturn(Optional.empty());
 
-        assertThrows(UsuarioNoEncontradoException.class, () -> presupuestoService.crear(request));
+        assertThrows(UsuarioNoEncontradoException.class, () -> presupuestoService.crear(usuarioId, request));
         verify(usuarioRepository).buscarPorId(usuarioId);
         verify(presupuestoRepository, never()).existeActivo(anyInt());
         verify(presupuestoRepository, never()).crear(any(Presupuesto.class));
@@ -84,13 +82,12 @@ class PresupuestoServiceTests {
         Integer usuarioId = 1;
         Usuario usuario = new Usuario(usuarioId, "Laura", "laura@example.com");
         CrearPresupuestoRequest request = new CrearPresupuestoRequest();
-        request.setUsuarioId(usuarioId);
         request.setMontoLimite(1500.0);
         request.setFechaFin(LocalDateTime.now().plusDays(30));
         when(usuarioRepository.buscarPorId(usuarioId)).thenReturn(Optional.of(usuario));
         when(presupuestoRepository.existeActivo(usuarioId)).thenReturn(true);
 
-        assertThrows(ConflictoExcepcion.class, () -> presupuestoService.crear(request));
+        assertThrows(ConflictoExcepcion.class, () -> presupuestoService.crear(usuarioId, request));
         verify(usuarioRepository).buscarPorId(usuarioId);
         verify(presupuestoRepository).existeActivo(usuarioId);
         verify(presupuestoRepository, never()).crear(any(Presupuesto.class));
