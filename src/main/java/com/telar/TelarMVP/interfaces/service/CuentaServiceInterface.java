@@ -10,11 +10,12 @@ public interface CuentaServiceInterface {
 
     List<Cuenta> listarPorUsuarioId(Integer usuarioId);
 
-    Cuenta findById(Integer id);
+    /** Busca una cuenta del usuario; si es de otro usuario se trata como inexistente. */
+    Cuenta findById(Integer id, Integer usuarioId);
 
     Cuenta insertar(Cuenta cuenta);
 
     Cuenta actualizar(Integer id, Cuenta cuenta);
 
-    void eliminar(Integer id);
+    void eliminar(Integer id, Integer usuarioId);
 }

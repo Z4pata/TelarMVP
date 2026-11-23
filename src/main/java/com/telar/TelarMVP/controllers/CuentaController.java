@@ -53,8 +53,8 @@ public class CuentaController implements CuentaApiInterface {
     }
 
     @Override
-    public ResponseEntity<Cuenta> findById(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(cuentaService.findById(id));
+    public ResponseEntity<Cuenta> findById(@AuthenticationPrincipal Jwt jwt, @PathVariable("id") Integer id) {
+        return ResponseEntity.ok(cuentaService.findById(id, jwtService.obtenerUsuarioId(jwt)));
     }
 
     @Override
@@ -67,8 +67,8 @@ public class CuentaController implements CuentaApiInterface {
     }
 
     @Override
-    public ResponseEntity<Void> eliminar(@PathVariable("id") Integer id) {
-        cuentaService.eliminar(id);
+    public ResponseEntity<Void> eliminar(@AuthenticationPrincipal Jwt jwt, @PathVariable("id") Integer id) {
+        cuentaService.eliminar(id, jwtService.obtenerUsuarioId(jwt));
         return ResponseEntity.noContent().build();
     }
 

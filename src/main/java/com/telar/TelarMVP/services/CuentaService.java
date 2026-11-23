@@ -45,8 +45,8 @@ public class CuentaService implements CuentaServiceInterface {
 
     @Override
     @Transactional(readOnly = true)
-    public Cuenta findById(Integer id) {
-        return cuentaRepository.findById(id)
+    public Cuenta findById(Integer id, Integer usuarioId) {
+        return cuentaRepository.findByIdAndUsuarioId(id, usuarioId)
                 .orElseThrow(() -> new CuentaNoEncontradaException(id));
     }
 
@@ -61,8 +61,8 @@ public class CuentaService implements CuentaServiceInterface {
     @Override
     @Transactional
     public Cuenta actualizar(Integer id, Cuenta cuenta) {
-        Cuenta existente = findById(id);
         verificarRelaciones(cuenta);
+        Cuenta existente = findById(id, cuenta.getUsuarioId());
         existente.setUsuarioId(cuenta.getUsuarioId());
         existente.setTipoCuenta(cuenta.getTipoCuenta());
         existente.setEntidad(cuenta.getEntidad());
@@ -72,8 +72,8 @@ public class CuentaService implements CuentaServiceInterface {
 
     @Override
     @Transactional
-    public void eliminar(Integer id) {
-        cuentaRepository.delete(findById(id));
+    public void eliminar(Integer id, Integer usuarioId) {
+        cuentaRepository.delete(findById(id, usuarioId));
     }
 
     private void verificarRelaciones(Cuenta cuenta) {

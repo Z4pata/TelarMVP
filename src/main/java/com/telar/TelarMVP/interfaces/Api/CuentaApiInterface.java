@@ -67,12 +67,12 @@ public interface CuentaApiInterface {
             @ApiResponse(responseCode = "200", description = "Cuenta encontrada"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "No existe la cuenta",
+                    description = "No existe la cuenta o no pertenece al usuario autenticado",
                     content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
             )
     })
     @GetMapping("/{id}")
-    ResponseEntity<Cuenta> findById(@PathVariable("id") Integer id);
+    ResponseEntity<Cuenta> findById(@AuthenticationPrincipal Jwt jwt, @PathVariable("id") Integer id);
 
     @Operation(summary = "Actualizar una cuenta por su ID")
     @ApiResponses({
@@ -105,10 +105,10 @@ public interface CuentaApiInterface {
             @ApiResponse(responseCode = "204", description = "Cuenta eliminada"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "No existe la cuenta",
+                    description = "No existe la cuenta o no pertenece al usuario autenticado",
                     content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
             )
     })
     @DeleteMapping("/{id}")
-    ResponseEntity<Void> eliminar(@PathVariable("id") Integer id);
+    ResponseEntity<Void> eliminar(@AuthenticationPrincipal Jwt jwt, @PathVariable("id") Integer id);
 }
