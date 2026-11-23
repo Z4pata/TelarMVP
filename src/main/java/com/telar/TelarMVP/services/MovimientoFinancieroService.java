@@ -1,5 +1,6 @@
 package com.telar.TelarMVP.services;
 
+import com.telar.TelarMVP.entities.Cuenta;
 import com.telar.TelarMVP.entities.MovimientoFinanciero;
 import com.telar.TelarMVP.dto.PresupuestoResponse;
 import com.telar.TelarMVP.entities.TipoMovimiento;
@@ -54,11 +55,10 @@ public class MovimientoFinancieroService implements MovimientoFinancieroServiceI
 
     @Override
     @Transactional
-    public MovimientoFinanciero crear(MovimientoFinanciero movimiento) {
+    public MovimientoFinanciero crear(MovimientoFinanciero movimiento, Integer usuarioId) {
         validarMovimiento(movimiento);
         movimiento.setId(null);
-        movimiento.setCuenta(cuentaRepository.findById(movimiento.getCuenta().getId())
-                .orElseThrow(() -> new CuentaNoEncontradaException(movimiento.getCuenta().getId())));
+        movimiento.setCuenta(buscarCuentaDelUsuario(movimiento.getCuenta().getId(), usuarioId));
         movimiento.setCategoria(categoriaRepository.findById(movimiento.getCategoria().getId())
                 .orElseThrow(() -> new EmptyResultDataAccessException(1)));
         movimiento.setTipoMovimiento(tipoMovimientoRepository.findById(movimiento.getTipoMovimiento().getId())
@@ -77,10 +77,8 @@ public class MovimientoFinancieroService implements MovimientoFinancieroServiceI
 
     @Override
     @Transactional(readOnly = true)
-    public List<MovimientoFinanciero> listarPorCuentaId(Integer cuentaId) {
-        if (cuentaRepository.findById(cuentaId).isEmpty()) {
-            throw new CuentaNoEncontradaException(cuentaId);
-        }
+    public List<MovimientoFinanciero> listarPorCuentaId(Integer cuentaId, Integer usuarioId) {
+        buscarCuentaDelUsuario(cuentaId, usuarioId);
         return movimientoRepository.findAllByCuenta_Id(cuentaId);
     }
 
@@ -100,6 +98,12 @@ public class MovimientoFinancieroService implements MovimientoFinancieroServiceI
                 presupuestoActual.getFechaInicio(),
                 presupuestoActual.getFechaFin()
         );
+    }
+
+    /** Una cuenta de otro usuario se trata como inexistente, para no revelar que existe. */
+    private Cuenta buscarCuentaDelUsuario(Integer cuentaId, Integer usuarioId) {
+        return cuentaRepository.findByIdAndUsuarioId(cuentaId, usuarioId)
+                .orElseThrow(() -> new CuentaNoEncontradaException(cuentaId));
     }
 
     private void validarMovimiento(MovimientoFinanciero movimiento) {

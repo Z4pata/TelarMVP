@@ -37,16 +37,20 @@ public class MovimientoFinancieroController implements MovimientoFinancieroApiIn
 
     @Override
     public ResponseEntity<MovimientoFinanciero> crear(
+            @AuthenticationPrincipal Jwt jwt,
             @Valid @RequestBody MovimientoFinancieroRequest request
     ) {
-        MovimientoFinanciero creado = movimientoService.crear(convertir(request));
+        MovimientoFinanciero creado = movimientoService.crear(convertir(request), jwtService.obtenerUsuarioId(jwt));
         return ResponseEntity.created(URI.create("/api/movimientos/" + creado.getId()))
                 .body(creado);
     }
 
     @Override
-    public ResponseEntity<List<MovimientoFinanciero>> listarPorCuentaId(Integer cuentaId) {
-        return ResponseEntity.ok(movimientoService.listarPorCuentaId(cuentaId));
+    public ResponseEntity<List<MovimientoFinanciero>> listarPorCuentaId(
+            @AuthenticationPrincipal Jwt jwt,
+            Integer cuentaId
+    ) {
+        return ResponseEntity.ok(movimientoService.listarPorCuentaId(cuentaId, jwtService.obtenerUsuarioId(jwt)));
     }
 
     @Override

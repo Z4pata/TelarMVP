@@ -32,7 +32,7 @@ public interface MovimientoFinancieroApiInterface {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "No existe la cuenta, categoría o tipo indicado",
+                    description = "No existe la cuenta (o no es del usuario autenticado), la categoría o el tipo indicado",
                     content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
             ),
             @ApiResponse(
@@ -42,19 +42,23 @@ public interface MovimientoFinancieroApiInterface {
             )
     })
     @PostMapping
-    ResponseEntity<MovimientoFinanciero> crear(@Valid @RequestBody MovimientoFinancieroRequest request);
+    ResponseEntity<MovimientoFinanciero> crear(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody MovimientoFinancieroRequest request
+    );
 
     @Operation(summary = "Listar movimientos financieros por cuenta")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Lista de movimientos de la cuenta"),
             @ApiResponse(
                     responseCode = "404",
-                    description = "No existe la cuenta indicada",
+                    description = "No existe la cuenta indicada o no pertenece al usuario autenticado",
                     content = @Content(schema = @Schema(implementation = ApiExceptionHandler.ApiError.class))
             )
     })
     @GetMapping("/cuenta/{cuentaId}")
     ResponseEntity<List<MovimientoFinanciero>> listarPorCuentaId(
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable("cuentaId") Integer cuentaId
     );
 

@@ -81,14 +81,14 @@ class MovimientoFinancieroServiceTests {
         Categoria categoria = new Categoria(4, "Alimentación", null);
         TipoMovimiento tipo = new TipoMovimiento(6, ProcesadorEgreso.CODIGO_TIPO, null);
         MovimientoFinanciero request = movimiento(cuenta, categoria, tipo, new BigDecimal("25.00"));
-        when(cuentaRepository.findById(3)).thenReturn(Optional.of(cuenta));
+        when(cuentaRepository.findByIdAndUsuarioId(3, 10)).thenReturn(Optional.of(cuenta));
         when(categoriaRepository.findById(4)).thenReturn(Optional.of(categoria));
         when(tipoMovimientoRepository.findById(6)).thenReturn(Optional.of(tipo));
         when(presupuestoRepository.existeActivo(10)).thenReturn(false);
         when(movimientoRepository.save(any(MovimientoFinanciero.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        MovimientoFinanciero resultado = movimientoService.crear(request);
+        MovimientoFinanciero resultado = movimientoService.crear(request, 10);
 
         assertEquals(request, resultado);
         verify(presupuestoRepository).existeActivo(10);
@@ -101,16 +101,16 @@ class MovimientoFinancieroServiceTests {
         Categoria categoria = new Categoria(4, "Salario", null);
         TipoMovimiento tipo = new TipoMovimiento(5, "Ingreso", null);
         MovimientoFinanciero request = movimiento(cuenta, categoria, tipo, new BigDecimal("100.00"));
-        when(cuentaRepository.findById(3)).thenReturn(Optional.of(cuenta));
+        when(cuentaRepository.findByIdAndUsuarioId(3, 10)).thenReturn(Optional.of(cuenta));
         when(categoriaRepository.findById(4)).thenReturn(Optional.of(categoria));
         when(tipoMovimientoRepository.findById(5)).thenReturn(Optional.of(tipo));
         when(movimientoRepository.save(any(MovimientoFinanciero.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        MovimientoFinanciero resultado = movimientoService.crear(request);
+        MovimientoFinanciero resultado = movimientoService.crear(request, 10);
 
         assertEquals(request, resultado);
-        verify(cuentaRepository).findById(3);
+        verify(cuentaRepository).findByIdAndUsuarioId(3, 10);
         verify(categoriaRepository).findById(4);
         verify(tipoMovimientoRepository).findById(5);
         verify(movimientoRepository).save(request);
@@ -123,20 +123,39 @@ class MovimientoFinancieroServiceTests {
                 movimiento(cuenta, new Categoria(4, "Alimentación", null),
                         new TipoMovimiento(6, ProcesadorEgreso.CODIGO_TIPO, null), new BigDecimal("25.00"))
         );
-        when(cuentaRepository.findById(3)).thenReturn(Optional.of(cuenta));
+        when(cuentaRepository.findByIdAndUsuarioId(3, 10)).thenReturn(Optional.of(cuenta));
         when(movimientoRepository.findAllByCuenta_Id(3)).thenReturn(movimientos);
 
-        assertEquals(movimientos, movimientoService.listarPorCuentaId(3));
-        verify(cuentaRepository).findById(3);
+        assertEquals(movimientos, movimientoService.listarPorCuentaId(3, 10));
+        verify(cuentaRepository).findByIdAndUsuarioId(3, 10);
         verify(movimientoRepository).findAllByCuenta_Id(3);
     }
 
     @Test
     void listarPorCuentaIdFallaSiLaCuentaNoExiste() {
-        when(cuentaRepository.findById(99)).thenReturn(Optional.empty());
+        when(cuentaRepository.findByIdAndUsuarioId(99, 10)).thenReturn(Optional.empty());
 
-        assertThrows(CuentaNoEncontradaException.class, () -> movimientoService.listarPorCuentaId(99));
+        assertThrows(CuentaNoEncontradaException.class, () -> movimientoService.listarPorCuentaId(99, 10));
         verify(movimientoRepository, never()).findAllByCuenta_Id(99);
+    }
+
+    @Test
+    void listarPorCuentaIdFallaSiLaCuentaEsDeOtroUsuario() {
+        when(cuentaRepository.findByIdAndUsuarioId(3, 20)).thenReturn(Optional.empty());
+
+        assertThrows(CuentaNoEncontradaException.class, () -> movimientoService.listarPorCuentaId(3, 20));
+        verify(movimientoRepository, never()).findAllByCuenta_Id(3);
+    }
+
+    @Test
+    void crearFallaSiLaCuentaEsDeOtroUsuario() {
+        Cuenta cuenta = new Cuenta(3, 10, null, "Banco", null);
+        MovimientoFinanciero request = movimiento(cuenta, new Categoria(4, "Salario", null),
+                new TipoMovimiento(5, "Ingreso", null), new BigDecimal("100.00"));
+        when(cuentaRepository.findByIdAndUsuarioId(3, 20)).thenReturn(Optional.empty());
+
+        assertThrows(CuentaNoEncontradaException.class, () -> movimientoService.crear(request, 20));
+        verify(movimientoRepository, never()).save(any(MovimientoFinanciero.class));
     }
 
     @Test
