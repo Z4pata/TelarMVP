@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CuentaRepository extends CrudRepository<Cuenta, Integer> {
@@ -16,4 +17,7 @@ public interface CuentaRepository extends CrudRepository<Cuenta, Integer> {
 
     @NullMarked
     List<Cuenta> findAllByUsuarioId(Integer usuarioId);
+
+    @NullMarked
+    Optional<Cuenta> findByIdAndUsuarioId(Integer id, Integer usuarioId);
 }
